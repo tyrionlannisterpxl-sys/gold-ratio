@@ -552,6 +552,23 @@
         const WEEKLY_CURRENT_DATE = 'October 31, 2025';
         const DAILY_CURRENT_DATE = 'October 31, 2025';
 
+
+
+// Update heading titles dynamically
+function updateChartTitles() {
+  const monthlyTitle = document.getElementById('monthlyTitle');
+  const weeklyTitle = document.getElementById('weeklyTitle');
+  const dailyTitle  = document.getElementById('dailyTitle');
+
+  if (monthlyTitle) monthlyTitle.textContent = `Monthly values ${MONTHLY_CURRENT_DATE} (long-term trend)`;
+  if (weeklyTitle)  weeklyTitle.textContent  = `Weekly values ${WEEKLY_CURRENT_DATE} (short-term trend)`;
+  if (dailyTitle)   dailyTitle.textContent   = `Daily values ${DAILY_CURRENT_DATE} (recent data)`;
+}
+
+// Run this after the DOM loads
+document.addEventListener('DOMContentLoaded', updateChartTitles);
+
+
         const CHART_TITLES = {
           Gold_MVA_Monthly: ['Gold - Long Term [Monthly Values] - & Moving Averages', `${MONTHLY_CURRENT_DATE}`],
           Gold_MVA_Weekly: ['Gold, Medium-Term [Weekly Values] & Moving Averages', `${WEEKLY_CURRENT_DATE}`],
