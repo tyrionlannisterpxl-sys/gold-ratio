@@ -998,7 +998,7 @@
                   color: 'black',
                   font: {
                     weight: 'bold',
-                    size: 18,
+                    size: 8,
                   },
                 },
               },
@@ -1007,7 +1007,7 @@
                 text: text,
                 color: 'black',
                 font: {
-                  size: 32,
+                  size: 10,
                   family: 'Arial',
                 },
               },
@@ -1025,7 +1025,7 @@
                   minRotation: 90,
                   color: 'black',
                   font: {
-                    size: 16,
+                    size: 8,
                     weight: 'bold',
                   },
                 },
@@ -1034,7 +1034,7 @@
                 ticks: {
                   color: 'black',
                   font: {
-                    size: 16,
+                    size: 8,
                     weight: 'bold',
                   },
                   // Used to format the values on the Y axis
