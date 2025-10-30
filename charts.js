@@ -773,7 +773,8 @@
   }
 
   // Charts Title
-  const MONTHLY_CURRENT_DATE = "October 2025";
+  // const MONTHLY_CURRENT_DATE = "October 2025";
+  const MONTHLY_CURRENT_DATE = "December 2026";
   const WEEKLY_CURRENT_DATE = "October 31, 2025";
   const DAILY_CURRENT_DATE = "October 31, 2025";
 
