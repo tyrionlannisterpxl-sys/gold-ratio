@@ -777,6 +777,14 @@
   const WEEKLY_CURRENT_DATE = "October 31, 2025";
   const DAILY_CURRENT_DATE = "October 31, 2025";
 
+  // expose data globally so Wix can read it
+  window.jsData = {
+    ...sourceData,
+    MONTHLY_CURRENT_DATE,
+    WEEKLY_CURRENT_DATE,
+    DAILY_CURRENT_DATE,
+  };
+
   // Update heading titles dynamically
   function updateChartTitles() {
     const monthlyTitle = document.getElementById("monthlyTitle");
