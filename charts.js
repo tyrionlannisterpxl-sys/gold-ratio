@@ -206,7 +206,7 @@
       1939.86, 1848.82, 1893.9, 2036.17, 2062.97, 2039.16, 2044.29, 2242.4,
       2286.21, 2372.2, 2326.72, 2447.57, 2503.4, 2634.2, 2746.42, 2650.33,
       2623.82, 2798.13, 2857, 3124.3, 3295.67, 3288.64, 3308.7, 3291, 3446.81,
-      3857.83, 2000,
+      3857.83, 4200,
     ],
     silverMonthlyValue: [
       26.4, 26.99, 26.67, 24.43, 25.93, 27.94, 26.13, 25.49, 23.9, 22.16, 23.89,
@@ -773,8 +773,7 @@
   }
 
   // Charts Title
-  // const MONTHLY_CURRENT_DATE = "October 2025";
-  const MONTHLY_CURRENT_DATE = "December 2026";
+  const MONTHLY_CURRENT_DATE = "October 2025";
   const WEEKLY_CURRENT_DATE = "October 31, 2025";
   const DAILY_CURRENT_DATE = "October 31, 2025";
 
