@@ -1847,7 +1847,7 @@ function createChart({ elementId, type, labels, text, datasets, ...rest }) {
           color: "black",
           font: {
             weight: "bold",
-            size: 8,
+            size: 15,
           },
         },
       },
@@ -1856,7 +1856,7 @@ function createChart({ elementId, type, labels, text, datasets, ...rest }) {
         text: text,
         color: "black",
         font: {
-          size: 10,
+          size: 17,
           family: "Arial",
         },
       },
@@ -1874,7 +1874,7 @@ function createChart({ elementId, type, labels, text, datasets, ...rest }) {
           minRotation: 90,
           color: "black",
           font: {
-            size: 8,
+            size: 15,
             weight: "bold",
           },
         },
@@ -1883,7 +1883,7 @@ function createChart({ elementId, type, labels, text, datasets, ...rest }) {
         ticks: {
           color: "black",
           font: {
-            size: 8,
+            size: 15,
             weight: "bold",
           },
           // Used to format the values on the Y axis
