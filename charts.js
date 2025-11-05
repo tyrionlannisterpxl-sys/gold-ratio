@@ -2007,12 +2007,9 @@ const chartData = allAssets.reduce((acc, assetName) => {
 // const GTSILV_DAILY_LAST_VALUE =
 //   allValues.gtsilv.daily[allValues.gtsilv.daily.length - 1];
 
-const GTSILV_MONTHLY_LAST_VALUE =
-  allValues.gtsilv.Monthly[allValues.gtsilv.Monthly.length - 1].toFixed(2);
-const GTSILV_WEEKLY_LAST_VALUE =
-  allValues.gtsilv.Weekly[allValues.gtsilv.Weekly.length - 1].toFixed(2);
-const GTSILV_DAILY_LAST_VALUE =
-  allValues.gtsilv.Daily[allValues.gtsilv.Daily.length - 1].toFixed(2);
+const GTSILV_MONTHLY_LAST_VALUE = allValues.gtsilv.Monthly[allValues.gtsilv.Monthly.length - 1].toFixed(2);
+const GTSILV_WEEKLY_LAST_VALUE = allValues.gtsilv.Weekly[allValues.gtsilv.Weekly.length - 1].toFixed(2);
+const GTSILV_DAILY_LAST_VALUE = allValues.gtsilv.Daily[allValues.gtsilv.Daily.length - 1].toFixed(2);
 
 // DOM Updates & Event Listeners
 
