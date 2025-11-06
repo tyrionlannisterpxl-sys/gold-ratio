@@ -1833,231 +1833,231 @@ function createChart({ elementId, type, labels, text, datasets, ...rest }) {
   const ctx = canvas.getContext("2d");
 
   // Default configuration for the charts
-  // const defaultOptions = {
-  //   elements: {
-  //     line: {
-  //       tension: 0.4,
-  //     },
-  //   },
-  //   plugins: {
-  //     legend: {
-  //       display: true,
-  //       position: "top",
-  //       labels: {
-  //         color: "black",
-  //         font: {
-  //           weight: "bold",
-  //           size: 15,
-  //         },
-  //       },
-  //     },
-  //     title: {
-  //       display: true,
-  //       text: text,
-  //       color: "black",
-  //       font: {
-  //         size: 17,
-  //         family: "Arial",
-  //       },
-  //     },
-  //     customCanvasBackgroundColor: {
-  //       color: "white",
-  //       borderColor: "#000000",
-  //       borderWidth: 10,
-  //     },
-  //   },
-  //   scales: {
-  //     x: {
-  //       ticks: {
-  //         autoSkip: false,
-  //         maxRotation: 90,
-  //         minRotation: 90,
-  //         color: "black",
-  //         font: {
-  //           size: 15,
-  //           weight: "bold",
-  //         },
-  //       },
-  //     },
-  //     y: {
-  //       ticks: {
-  //         color: "black",
-  //         font: {
-  //           size: 15,
-  //           weight: "bold",
-  //         },
-  //         // Used to format the values on the Y axis
-  //         callback: function (value) {
-  //           // 1. For very large or very small numbers
-  //           if (
-  //             Math.abs(value) > 10000000 ||
-  //             (Math.abs(value) > 0 && Math.abs(value) < 0.001)
-  //           ) {
-  //             return value.toExponential(1);
-  //           }
-
-  //           // 2. For numbers that are effectively integers (like 5, 34000, or 1.999, etc.)
-  //           if (Math.abs(value - Math.round(value)) < 0.001) {
-  //             return Math.round(value);
-  //           }
-
-  //           // 3. For all other decimals (1.7, 1.2938...)
-  //           // First, clean up any minor JS math errors
-  //           const cleanValue = Number(value.toPrecision(15));
-
-  //           // Convert to string to check decimal length
-  //           const stringValue = String(cleanValue);
-
-  //           // Check if it has a decimal point AND that decimal part is "messy"
-  //           if (
-  //             stringValue.includes(".") &&
-  //             stringValue.split(".")[1].length > 2
-  //           ) {
-  //             // If it has > 2 decimal places, format it.
-  //             // 1.2938... becomes "1.29"
-  //             return cleanValue.toFixed(2);
-  //           }
-
-  //           // Otherwise, it's a "clean" decimal like 1.7. Return it.
-  //           return cleanValue; // 1.7 stays 1.7
-  //         },
-  //       },
-  //     },
-  //   },
-  //   layout: {
-  //     padding: {
-  //       left: 30,
-  //       right: 30,
-  //       top: 30,
-  //       bottom: 30,
-  //     },
-  //   },
-  // };
-
-
-
-
-
-  function getChartOptions(canvasElement, text) {
-    // 1. Determine size based on the custom attribute
-    const size = canvasElement.getAttribute('data-chart-size') || 'small';
-
-    // 2. Define dynamic sizes
-    let baseFontSize, titleFontSize;
-    let lineThickness, pointSize;
-
-    if (size === 'large') {
-        // --- LARGE CHART SETTINGS ---
-        baseFontSize = 14; 
-        titleFontSize = 18; 
-        lineThickness = 3;   // Thicker Line
-        pointSize = 5;       // Bigger Dots
-    } else {
-        // --- SMALL CHART SETTINGS ---
-        baseFontSize = 6;
-        titleFontSize = 8;
-        lineThickness = 1.5; // Thinner Line
-        pointSize = 2.5;     // Smaller Dots
-    }
-
-    // 3. Define and return the options object dynamically
-    const options = {
-        elements: {
-            line: {
-                tension: 0.4,
-                borderWidth: lineThickness, // <-- Dynamic Line Thickness
-            },
-            point: {
-                radius: pointSize,        // <-- Dynamic Dot Size
-                hitRadius: pointSize + 2, // Larger hit area for easier clicking on dots
-            },
+  const defaultOptions = {
+    elements: {
+      line: {
+        tension: 0.4,
+      },
+    },
+    plugins: {
+      legend: {
+        display: true,
+        position: "top",
+        labels: {
+          color: "black",
+          font: {
+            weight: "bold",
+            size: 15,
+          },
         },
-        plugins: {
-            legend: {
-                display: true,
-                position: "top",
-                labels: {
-                    color: "black",
-                    font: {
-                        weight: "bold",
-                        size: baseFontSize, // Dynamic Font Size
-                    },
-                },
-            },
-            title: {
-                display: true,
-                text: text,
-                color: "black",
-                font: {
-                    size: titleFontSize, // Dynamic Font Size
-                    family: "Arial",
-                },
-            },
-            customCanvasBackgroundColor: {
-                color: "white",
-                borderColor: "#000000",
-                borderWidth: 10,
-            },
+      },
+      title: {
+        display: true,
+        text: text,
+        color: "black",
+        font: {
+          size: 17,
+          family: "Arial",
         },
-        scales: {
-            x: {
-                ticks: {
-                    autoSkip: false,
-                    maxRotation: 90,
-                    minRotation: 90,
-                    color: "black",
-                    font: {
-                        size: baseFontSize, // Dynamic Font Size
-                        weight: "bold",
-                    },
-                },
-            },
-            y: {
-                ticks: {
-                    color: "black",
-                    font: {
-                        size: baseFontSize, // Dynamic Font Size
-                        weight: "bold",
-                    },
-                    // Y-Axis formatting logic (remains the same)
-                    callback: function (value) {
-                        if (
-                            Math.abs(value) > 10000000 ||
-                            (Math.abs(value) > 0 && Math.abs(value) < 0.001)
-                        ) {
-                            return value.toExponential(1);
-                        }
-
-                        if (Math.abs(value - Math.round(value)) < 0.001) {
-                            return Math.round(value);
-                        }
-
-                        const cleanValue = Number(value.toPrecision(15));
-                        const stringValue = String(cleanValue);
-
-                        if (
-                            stringValue.includes(".") &&
-                            stringValue.split(".")[1].length > 2
-                        ) {
-                            return cleanValue.toFixed(2);
-                        }
-
-                        return cleanValue;
-                    },
-                },
-            },
+      },
+      customCanvasBackgroundColor: {
+        color: "white",
+        borderColor: "#000000",
+        borderWidth: 10,
+      },
+    },
+    scales: {
+      x: {
+        ticks: {
+          autoSkip: false,
+          maxRotation: 90,
+          minRotation: 90,
+          color: "black",
+          font: {
+            size: 15,
+            weight: "bold",
+          },
         },
-        layout: {
-            padding: {
-                left: 30,
-                right: 30,
-                top: 30,
-                bottom: 30,
-            },
+      },
+      y: {
+        ticks: {
+          color: "black",
+          font: {
+            size: 15,
+            weight: "bold",
+          },
+          // Used to format the values on the Y axis
+          callback: function (value) {
+            // 1. For very large or very small numbers
+            if (
+              Math.abs(value) > 10000000 ||
+              (Math.abs(value) > 0 && Math.abs(value) < 0.001)
+            ) {
+              return value.toExponential(1);
+            }
+
+            // 2. For numbers that are effectively integers (like 5, 34000, or 1.999, etc.)
+            if (Math.abs(value - Math.round(value)) < 0.001) {
+              return Math.round(value);
+            }
+
+            // 3. For all other decimals (1.7, 1.2938...)
+            // First, clean up any minor JS math errors
+            const cleanValue = Number(value.toPrecision(15));
+
+            // Convert to string to check decimal length
+            const stringValue = String(cleanValue);
+
+            // Check if it has a decimal point AND that decimal part is "messy"
+            if (
+              stringValue.includes(".") &&
+              stringValue.split(".")[1].length > 2
+            ) {
+              // If it has > 2 decimal places, format it.
+              // 1.2938... becomes "1.29"
+              return cleanValue.toFixed(2);
+            }
+
+            // Otherwise, it's a "clean" decimal like 1.7. Return it.
+            return cleanValue; // 1.7 stays 1.7
+          },
         },
-    };
-    return options;
-}
+      },
+    },
+    layout: {
+      padding: {
+        left: 30,
+        right: 30,
+        top: 30,
+        bottom: 30,
+      },
+    },
+  };
+
+
+
+
+
+//   function getChartOptions(canvasElement, text) {
+//     // 1. Determine size based on the custom attribute
+//     const size = canvasElement.getAttribute('data-chart-size') || 'small';
+
+//     // 2. Define dynamic sizes
+//     let baseFontSize, titleFontSize;
+//     let lineThickness, pointSize;
+
+//     if (size === 'large') {
+//         // --- LARGE CHART SETTINGS ---
+//         baseFontSize = 14; 
+//         titleFontSize = 18; 
+//         lineThickness = 3;   // Thicker Line
+//         pointSize = 5;       // Bigger Dots
+//     } else {
+//         // --- SMALL CHART SETTINGS ---
+//         baseFontSize = 6;
+//         titleFontSize = 8;
+//         lineThickness = 1.5; // Thinner Line
+//         pointSize = 2.5;     // Smaller Dots
+//     }
+
+//     // 3. Define and return the options object dynamically
+//     const options = {
+//         elements: {
+//             line: {
+//                 tension: 0.4,
+//                 borderWidth: lineThickness, // <-- Dynamic Line Thickness
+//             },
+//             point: {
+//                 radius: pointSize,        // <-- Dynamic Dot Size
+//                 hitRadius: pointSize + 2, // Larger hit area for easier clicking on dots
+//             },
+//         },
+//         plugins: {
+//             legend: {
+//                 display: true,
+//                 position: "top",
+//                 labels: {
+//                     color: "black",
+//                     font: {
+//                         weight: "bold",
+//                         size: baseFontSize, // Dynamic Font Size
+//                     },
+//                 },
+//             },
+//             title: {
+//                 display: true,
+//                 text: text,
+//                 color: "black",
+//                 font: {
+//                     size: titleFontSize, // Dynamic Font Size
+//                     family: "Arial",
+//                 },
+//             },
+//             customCanvasBackgroundColor: {
+//                 color: "white",
+//                 borderColor: "#000000",
+//                 borderWidth: 10,
+//             },
+//         },
+//         scales: {
+//             x: {
+//                 ticks: {
+//                     autoSkip: false,
+//                     maxRotation: 90,
+//                     minRotation: 90,
+//                     color: "black",
+//                     font: {
+//                         size: baseFontSize, // Dynamic Font Size
+//                         weight: "bold",
+//                     },
+//                 },
+//             },
+//             y: {
+//                 ticks: {
+//                     color: "black",
+//                     font: {
+//                         size: baseFontSize, // Dynamic Font Size
+//                         weight: "bold",
+//                     },
+//                     // Y-Axis formatting logic (remains the same)
+//                     callback: function (value) {
+//                         if (
+//                             Math.abs(value) > 10000000 ||
+//                             (Math.abs(value) > 0 && Math.abs(value) < 0.001)
+//                         ) {
+//                             return value.toExponential(1);
+//                         }
+
+//                         if (Math.abs(value - Math.round(value)) < 0.001) {
+//                             return Math.round(value);
+//                         }
+
+//                         const cleanValue = Number(value.toPrecision(15));
+//                         const stringValue = String(cleanValue);
+
+//                         if (
+//                             stringValue.includes(".") &&
+//                             stringValue.split(".")[1].length > 2
+//                         ) {
+//                             return cleanValue.toFixed(2);
+//                         }
+
+//                         return cleanValue;
+//                     },
+//                 },
+//             },
+//         },
+//         layout: {
+//             padding: {
+//                 left: 30,
+//                 right: 30,
+//                 top: 30,
+//                 bottom: 30,
+//             },
+//         },
+//     };
+//     return options;
+// }
 
 
 
