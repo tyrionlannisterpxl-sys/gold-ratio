@@ -254,7 +254,7 @@ const sourceData = {
     3240.61, 3326.46, 3201.78, 3357.52, 3288.64, 3309.25, 3431.78, 3368,
     3273.33, 3337.06, 3354.75, 3349.56, 3336.22, 3362.64, 3398.58, 3325.21,
     3371.24, 3446.81, 3585.61, 3642.64, 3684.49, 3759.83, 3886.83, 4017.85,
-    4251.45, 4555.52,
+    4251.45, 4111.56, 4001.51,
   ],
   silverWeeklyValue: [
     31.39, 31.63, 32.19, 31.53, 33.7, 33.7, 32.44, 31.29, 30.24, 31.33, 30.6,
@@ -331,11 +331,19 @@ const sourceData = {
     1450.5, 1436.5,
   ],
   djiaDailyValue: [
-    43588, 43981, 44243, 44946, 45293, 45781, 45914, 46177, 46315, 46342, 46688,
-    46247, 45842, 46001, 46270, 46398, 46551, 46792, 47563,
+    44459, 44922, 44911, 44946, 44912, 44922, 44938, 44786, 45632, 45282, 45418,
+    45565, 45637, 45545, 45421, 45296, 45271, 45621, 45401, 45515, 45711, 45491,
+    46108, 45834, 45883, 45758, 46018, 46142, 46315, 46382, 46293, 46121, 45947,
+    46247, 46316, 46398, 46441, 46520, 46758, 46695, 46603, 46602, 46358, 45480,
+    46068, 46270, 46253, 45952, 46191, 46707, 46925, 46590, 46735, 47207, 47545,
+    47706, 47632, 47522, 47563,
   ],
   sp500DailyValue: [
-    6238, 6261, 6289, 6389, 6420, 6450, 6463, 6489, 6664, 6688, 6792, 6840,
+    6446, 6447, 6469, 6450, 6449, 6411, 6396, 6370, 6467, 6439, 6466, 6481,
+    6502, 6460, 6438, 6416, 6448, 6502, 6482, 6495, 6513, 6532, 6587, 6584,
+    6615, 6607, 6600, 6632, 6664, 6694, 6657, 6638, 6605, 6644, 6661, 6688,
+    6711, 6715, 6716, 6740, 6715, 6754, 6735, 6553, 6655, 6644, 6671, 6629,
+    6664, 6735, 6735, 6699, 6738, 6792, 6875, 6891, 6891, 6822, 6840,
   ],
 };
 
@@ -354,7 +362,7 @@ const weightsLTMA = [
 
 const weightsSignal = [0.0667, 0.1333, 0.2, 0.2667, 0.3333];
 
-// Map asset names to their data arrays
+// Data Structure Mappings
 const sourceDataMap = {
   gold: {
     Monthly: sourceData.goldMonthlyValue,
@@ -398,6 +406,7 @@ const ratioDefinitions = [
   { name: "sp500tg", numerator: "sp500", denominator: "gold" },
   { name: "sp500ts", numerator: "sp500", denominator: "silver" },
 ];
+
 const timePeriods = ["Monthly", "Weekly", "Daily"];
 
 // Chart Display Constants
@@ -419,11 +428,6 @@ const ASSETS = [
 
 // The types of the chart that are generated (117 charts in total)
 const CHART_TYPE_KEYS = ["MVA", "MACD", "HIST"];
-const CHART_TYPE_MAP = {
-  MVA: "line",
-  MACD: "line",
-  HIST: "bar",
-};
 
 // The graph's legend text
 const DATASET_LABELS = {
@@ -437,310 +441,85 @@ const DATASET_LABELS = {
 
 // Controls background and border color
 const DATASET_COLORS = {
-  // Line chart colors (MVA, MACD)
-  CURRENT_VALUE: {
-    backgroundColor: "rgba(0, 128, 0, 0.1)", // Green tint for current value area
-    borderColor: "green", // Solid green line
-    pointBackgroundColor: "green",
-    pointBorderColor: "green",
-    fill: true, // Fill under the line
+  [DATASET_LABELS.CURRENT_VALUE]: {
+    borderColor: "green",
+    backgroundColor: "green",
   },
-  STMA: {
-    borderColor: "blue", // Blue line for short term MA
-    pointBackgroundColor: "blue",
-    pointBorderColor: "blue",
+  [DATASET_LABELS.STMA]: {
+    borderColor: "black",
+    backgroundColor: "black",
   },
-  LTMA: {
-    borderColor: "red", // Red line for long term MA
-    pointBackgroundColor: "red",
-    pointBorderColor: "red",
+  [DATASET_LABELS.LTMA]: {
+    borderColor: "#cc0000",
+    backgroundColor: "#cc0000",
   },
-  MACD: {
-    borderColor: "orange", // Orange line for MACD
-    pointBackgroundColor: "orange",
-    pointBorderColor: "orange",
+  [DATASET_LABELS.MACD]: {
+    borderColor: "blue",
+    backgroundColor: "blue",
   },
-  SIGNAL: {
-    borderColor: "purple", // Purple line for Signal
-    pointBackgroundColor: "purple",
-    pointBorderColor: "purple",
+  [DATASET_LABELS.SIGNAL]: {
+    borderColor: "orange",
+    backgroundColor: "orange",
   },
-  // Bar chart colors (HIST)
-  HISTOGRAM: {
-    backgroundColor: (context) => {
-      const value = context.dataset.data[context.dataIndex];
-      // Positive bars are green, negative bars are red
-      return value >= 0 ? "rgba(0, 128, 0, 0.6)" : "rgba(255, 0, 0, 0.6)";
-    },
-    borderColor: (context) => {
-      const value = context.dataset.data[context.dataIndex];
-      return value >= 0 ? "green" : "red";
-    },
-    borderWidth: 1,
+  [DATASET_LABELS.HISTOGRAM]: {
+    borderColor: "gray",
+    backgroundColor: "gray",
   },
 };
 
-// Styling overrides for legend labels
-const LEGEND_STYLES = {
-  // Use for MACD charts (MACD, Signal, Histogram)
-  NORMAL_WEIGHT: {
-    labels: {
-      color: "black",
-      font: {
-        weight: "normal",
-      },
-    },
-  },
-  // Use for HIST charts and non-Gold MVA charts
-  NORMAL_WEIGHT_GRAY: {
-    labels: {
-      color: "gray",
-      font: {
-        weight: "normal",
-      },
-    },
-  },
-};
-
-// =========================================================================
-// SIZE-SPECIFIC CHART OPTIONS (NEW BLOCK ADDED HERE)
-// These options will be merged for any chart whose ID ends with '_Small'.
-// They override values in DEFAULT_CHART_OPTIONS.
-// =========================================================================
-
-const SMALL_CHART_OPTIONS = {
-  options: {
-    // Reduce font sizes for axes ticks and legend
-    plugins: {
-      legend: {
-        labels: {
-          font: {
-            size: 10, // Smaller legend font (Default is 15)
-          },
-        },
-      },
-      title: {
-        font: {
-          size: 12, // Smaller title font (Default is 20)
-        },
-      },
-    },
-    scales: {
-      x: {
-        ticks: {
-          font: {
-            size: 10, // Smaller X-axis font (Default is 15)
-          },
-        },
-      },
-      y: {
-        ticks: {
-          font: {
-            size: 10, // Smaller Y-axis font (Default is 15)
-          },
-        },
-      },
-    },
-    // Adjust bar spacing for 'bar' charts (HIST)
-    datasets: {
-      bar: {
-        // Less space used for the bar itself (thinner bar, default is 0.9)
-        barPercentage: 0.7,
-        // More space between bar groups (default is 0.8)
-        categoryPercentage: 0.7,
-      },
-    },
-  },
-};
-
-/**
- * Returns size-specific chart options based on element ID.
- * We use the suffix '_Small' to trigger the smaller configuration.
- * @param {string} elementId - The ID of the chart canvas element.
- * @returns {object} The chart options override object.
- */
-function getChartSizeOptions(elementId) {
-  if (elementId && elementId.endsWith("_Small")) {
-    return SMALL_CHART_OPTIONS;
-  }
-  return {};
-}
-
-// =========================================================================
-// DEFAULT CHART OPTIONS (Original Code)
-// =========================================================================
-
-const DEFAULT_CHART_OPTIONS = {
-  options: {
-    // Responsive, but maintaining aspect ratio of the canvas element
-    responsive: true,
-    maintainAspectRatio: false,
-    // Plugins (like title, legend, tooltip)
-    plugins: {
-      legend: {
-        position: "bottom",
-        align: "start",
-        labels: {
-          color: "black",
-          font: {
-            size: 15,
-            weight: "bold",
-          },
-          usePointStyle: true,
-          pointStyle: "circle",
-          padding: 30, // Space between legend items
-        },
-      },
-      title: {
-        display: true,
-        padding: {
-          top: 30,
-          bottom: 10,
-        },
-        color: "black",
-        font: {
-          size: 20,
-          weight: "bold",
-        },
-        text: "Default Chart Title",
-      },
-      tooltip: {
-        titleFont: {
-          size: 14,
-        },
-        bodyFont: {
-          size: 14,
-        },
-        padding: 10,
-        backgroundColor: "rgba(0, 0, 0, 0.7)",
-        callbacks: {
-          label: function (context) {
-            let label = context.dataset.label || "";
-            if (label) {
-              label += ": ";
-            }
-            if (context.parsed.y !== null) {
-              // Standard number formatting logic for tooltips
-              const value = context.parsed.y;
-              if (
-                Math.abs(value) > 10000000 ||
-                (Math.abs(value) > 0 && Math.abs(value) < 0.001)
-              ) {
-                label += value.toExponential(4);
-              } else if (Math.abs(value - Math.round(value)) < 0.001) {
-                label += Math.round(value);
-              } else {
-                label += value.toFixed(2);
-              }
-            }
-            return label;
-          },
-        },
-      },
-    },
-    // Scales (Axes)
-    scales: {
-      x: {
-        display: true,
-        grid: {
-          display: true,
-          color: "rgba(128, 128, 128, 0.3)", // Gray grid lines
-        },
-        ticks: {
-          color: "black",
-          font: {
-            size: 15,
-            weight: "bold",
-          },
-        },
-      },
-      y: {
-        display: true,
-        grid: {
-          display: true,
-          color: "rgba(128, 128, 128, 0.3)",
-        },
-        ticks: {
-          color: "black",
-          font: {
-            size: 15,
-            weight: "bold",
-          },
-          // Used to format the values on the Y axis
-          callback: function (value) {
-            // 1. For very large or very small numbers
-            if (
-              Math.abs(value) > 10000000 ||
-              (Math.abs(value) > 0 && Math.abs(value) < 0.001)
-            ) {
-              return value.toExponential(1);
-            }
-            // 2. For numbers that are effectively integers (like 5, 34000, or 1.999, etc.)
-            if (Math.abs(value - Math.round(value)) < 0.001) {
-              return Math.round(value);
-            }
-            // 3. For all other decimals (1.7, 1.2938...)
-            // First, clean up any minor JS math errors
-            const cleanValue = Number(value.toPrecision(15));
-            // Convert to string to check decimal length
-            const stringValue = String(cleanValue);
-            // Check if it has a decimal point AND that decimal part is "messy"
-            if (
-              stringValue.includes(".") &&
-              stringValue.split(".")[1].length > 2
-            ) {
-              // If it has > 2 decimal places, format it.
-              // 1.2938... becomes "1.29"
-              return cleanValue.toFixed(2);
-            }
-            // Otherwise, it's a "clean" decimal like 1.7
-            return cleanValue;
-          },
-        },
-      },
-    },
-    // Element styles (like bar thickness)
-    elements: {
-      line: {
-        borderWidth: 2,
-        tension: 0.1, // Smooth lines
-      },
-      point: {
-        radius: 4, // Bigger points for visibility
-        hoverRadius: 6,
-      },
-      bar: {
-        borderWidth: 1,
-      },
-    },
-    // Default bar configuration (can be overridden by SMALL_CHART_OPTIONS)
-    datasets: {
-      bar: {
-        barPercentage: 0.9, // Thicker bars
-        categoryPercentage: 0.8, // Less space between bar groups
-      },
-    },
-  },
-  // Plugin for chart background and border
-  plugins: [
-    {
-      id: "customCanvasBackgroundColor",
-      beforeDraw: (chart, args, options) => {
-        const { ctx } = chart;
-        ctx.save();
-        // Draw the border first
-        ctx.lineWidth = options.borderWidth || 10;
-        ctx.strokeStyle = options.borderColor || "#000000";
-        ctx.strokeRect(0, 0, chart.width, chart.height);
-        // Draw the background behind everything
-        ctx.globalCompositeOperation = "destination-over";
-        // Draw the background
-        ctx.fillStyle = options.color || "white";
-        ctx.fillRect(0, 0, chart.width, chart.height);
-        ctx.restore();
-      },
-    },
+// Used when generating the graphs
+const DATA_MAP = {
+  MVA: [
+    { label: DATASET_LABELS.CURRENT_VALUE, suffix: "Value" },
+    { label: DATASET_LABELS.STMA, suffix: "STMA" },
+    { label: DATASET_LABELS.LTMA, suffix: "LTMA" },
   ],
+  MACD: [
+    { label: DATASET_LABELS.MACD, suffix: "MACD" },
+    { label: DATASET_LABELS.SIGNAL, suffix: "Signal" },
+  ],
+  HIST: [{ label: DATASET_LABELS.HISTOGRAM, suffix: "Histogram" }],
+};
+
+// Used when generating the graphs
+const LABELS_MAP = {
+  Monthly: sourceData.monthlyDates,
+  Weekly: sourceData.weeklyDates,
+  Daily: sourceData.dailyDates,
+};
+
+// The 3 types of the charts
+const CHART_TYPE_MAP = {
+  MVA: "line",
+  MACD: "line",
+  HIST: "bar",
+};
+
+// Custom legend styles
+const LEGEND_STYLES = {
+  NORMAL_WEIGHT: {
+    plugins: {
+      legend: {
+        labels: {
+          font: {
+            weight: "normal",
+          },
+        },
+      },
+    },
+  },
+  NORMAL_WEIGHT_GRAY: {
+    plugins: {
+      legend: {
+        labels: {
+          color: "gray",
+          font: {
+            weight: "normal",
+          },
+        },
+      },
+    },
+  },
 };
 
 // =========================================================================
@@ -768,10 +547,10 @@ function calculateRatioArray(numeratorArray, denominatorArray) {
 
 // Constants that were initially magic values
 const DATA_LENGTH = 59;
-const STMA_WINDOW_OFFSET = weightsSTMA.length - 1; // 6
+const STMA_WINDOW_OFFSET = weightsSTMA.length - 1; // 7
 const LTMA_WINDOW_OFFSET = weightsLTMA.length - 1; // 33
 const SIGNAL_WINDOW_OFFSET = weightsSignal.length - 1; // 4
-const HISTOGRAM_START_OFFSET = LTMA_WINDOW_OFFSET + SIGNAL_WINDOW_OFFSET; // 37
+const HISTOGRAM_START_OFFSET = LTMA_WINDOW_OFFSET + SIGNAL_WINDOW_OFFSET + 1; // 38
 
 /**
  * Calculates a weighted sum for a slice of an array.
@@ -783,6 +562,7 @@ const HISTOGRAM_START_OFFSET = LTMA_WINDOW_OFFSET + SIGNAL_WINDOW_OFFSET; // 37
  */
 function calculateWeightedSum(values, weights, startIndex, endIndex) {
   const valueSlice = values.slice(startIndex, endIndex + 1);
+
   return valueSlice.reduce((accumulator, currentValue, index) => {
     const weightedValue = parseFloat(currentValue) * weights[index];
     return accumulator + weightedValue;
@@ -791,11 +571,13 @@ function calculateWeightedSum(values, weights, startIndex, endIndex) {
 
 function calculateSTMA(sourceValues, weightValues) {
   // Array.from is used to create and populate the new array in one step.
-  return Array.from({ length: DATA_LENGTH }, (_, index) => {
-    // If the index is 6 or less, the final value is 0.
-    if (index < STMA_WINDOW_OFFSET) {
+  const monthlyValues = Array.from({ length: DATA_LENGTH }, (_, index) => {
+    // If the index is 32 or less, the final value is 0.
+    if (index < LTMA_WINDOW_OFFSET) {
       return 0;
-    } else {
+    }
+    // Otherwise, call the helper function to calculate the value.
+    else {
       return calculateWeightedSum(
         sourceValues,
         weightValues,
@@ -804,11 +586,14 @@ function calculateSTMA(sourceValues, weightValues) {
       );
     }
   });
+
+  return monthlyValues;
 }
 
 function calculateLTMA(sourceValues, weightValues) {
+  // Array.from is used to create and populate the new array in one step.
   return Array.from({ length: DATA_LENGTH }, (_, index) => {
-    // If the index is 33 or less, the final value is 0.
+    // If the index is 32 or less, the final value is 0.
     if (index < LTMA_WINDOW_OFFSET) {
       return 0;
     } else {
@@ -843,10 +628,10 @@ function calculateMACDValues(stmaValue, ltmaValue) {
 function calculateSignal(sourceValues, weightValues) {
   return Array.from({ length: DATA_LENGTH }, (_, index) => {
     // For indices 0-37, the value is 0.
-    if (index < HISTOGRAM_START_OFFSET) {
+    if (index < LTMA_WINDOW_OFFSET + SIGNAL_WINDOW_OFFSET) {
       return 0;
     }
-    // For indices 38-58, calculate the weighted sum.
+    // For indices 33-58, calculate the weighted sum.
     else {
       return calculateWeightedSum(
         sourceValues,
@@ -873,118 +658,32 @@ function calculateHistogram(macdValues, signalValues) {
 // =========================================================================
 // Chart Data Generation
 // =========================================================================
-
 /**
- * Creates a complete set of chart indicators (STMA, LTMA, MACD, etc.) for a given
- * asset across all time periods.
- * @param {string} assetName - The name of the asset (e.g., 'gold', 'dtg').
- * @param {object} assetValues - An object containing the asset's values for each period.
- * @returns {object} An object with all calculated indicators.
+ * Creates a complete set of chart indicators (STMA, LTMA, MACD, etc.) for a given asset.
+ * @param {string} assetName - The name of the asset (e.g., 'gold', 'gtsilv').
+ * @param {object} assetSourceData - The source data object for the asset, containing Monthly, Weekly, and Daily values.
+ * @returns {object} An object containing all calculated indicators for the asset across all time periods.
  */
-function calculateAllIndicatorsForAsset(assetName, assetValues) {
+function calculateAllIndicatorsForAsset(assetName, assetSourceData) {
   const result = {};
-
   timePeriods.forEach((period) => {
-    const source = assetValues[period];
+    const value = assetSourceData[period];
+    if (value) {
+      const stma = calculateSTMA(value, weightsSTMA);
+      const ltma = calculateLTMA(value, weightsLTMA);
+      const macd = calculateMACDValues(stma, ltma);
+      const signal = calculateSignal(macd, weightsSignal);
+      const histogram = calculateHistogram(macd, signal);
 
-    const stma = calculateSTMA(source, weightsSTMA);
-    const ltma = calculateLTMA(source, weightsLTMA);
-    const macd = calculateMACDValues(stma, ltma);
-    const signal = calculateSignal(macd, weightsSignal);
-    const histogram = calculateHistogram(macd, signal);
-
-    // Consistent naming convention for the keys
-    result[`${assetName}${period}STMA`] = stma;
-    result[`${assetName}${period}LTMA`] = ltma;
-    result[`${assetName}${period}MACD`] = macd;
-    result[`${assetName}${period}Signal`] = signal;
-    result[`${assetName}${period}Histogram`] = histogram;
+      // Consistent naming convention for the keys
+      result[`${assetName}${period}STMA`] = stma;
+      result[`${assetName}${period}LTMA`] = ltma;
+      result[`${assetName}${period}MACD`] = macd;
+      result[`${assetName}${period}Signal`] = signal;
+      result[`${assetName}${period}Histogram`] = histogram;
+    }
   });
-
   return result;
-}
-
-/**
- * Generates datasets for a specific chart type, asset, and time frame.
- * @param {string} assetName - The name of the asset (e.g., 'Gold', 'Silver').
- * @param {string} timeFrame - The time frame (e.g., 'Monthly', 'Weekly', 'Daily').
- * @param {string} chartType - The chart type key (e.g., 'MVA', 'MACD', 'HIST').
- * @returns {object[]} An array of dataset objects for Chart.js.
- */
-function generateDatasets(assetName, timeFrame, chartType) {
-  const assetKey = assetName.toLowerCase();
-  const period = timeFrame;
-  const datasets = [];
-
-  // MVA Charts: Current Value, STMA, LTMA
-  if (chartType === "MVA") {
-    // Current Value Dataset
-    datasets.push({
-      label: DATASET_LABELS.CURRENT_VALUE,
-      data: chartData[`${assetKey}${period}Value`],
-      borderColor: DATASET_COLORS.CURRENT_VALUE.borderColor,
-      backgroundColor: DATASET_COLORS.CURRENT_VALUE.backgroundColor,
-      pointBackgroundColor: DATASET_COLORS.CURRENT_VALUE.pointBackgroundColor,
-      pointBorderColor: DATASET_COLORS.CURRENT_VALUE.pointBorderColor,
-      fill: DATASET_COLORS.CURRENT_VALUE.fill,
-      order: 3, // Ensure current value is drawn on top
-    });
-    // STMA Dataset
-    datasets.push({
-      label: DATASET_LABELS.STMA,
-      data: chartData[`${assetKey}${period}STMA`],
-      borderColor: DATASET_COLORS.STMA.borderColor,
-      pointBackgroundColor: DATASET_COLORS.STMA.pointBackgroundColor,
-      pointBorderColor: DATASET_COLORS.STMA.pointBorderColor,
-      order: 2,
-    });
-    // LTMA Dataset
-    datasets.push({
-      label: DATASET_LABELS.LTMA,
-      data: chartData[`${assetKey}${period}LTMA`],
-      borderColor: DATASET_COLORS.LTMA.borderColor,
-      pointBackgroundColor: DATASET_COLORS.LTMA.pointBackgroundColor,
-      pointBorderColor: DATASET_COLORS.LTMA.pointBorderColor,
-      order: 1,
-    });
-  }
-
-  // MACD Charts: MACD, Signal
-  if (chartType === "MACD") {
-    // MACD Dataset
-    datasets.push({
-      label: DATASET_LABELS.MACD,
-      data: chartData[`${assetKey}${period}MACD`],
-      borderColor: DATASET_COLORS.MACD.borderColor,
-      pointBackgroundColor: DATASET_COLORS.MACD.pointBackgroundColor,
-      pointBorderColor: DATASET_COLORS.MACD.pointBorderColor,
-    });
-    // Signal Line Dataset
-    datasets.push({
-      label: DATASET_LABELS.SIGNAL,
-      data: chartData[`${assetKey}${period}Signal`],
-      borderColor: DATASET_COLORS.SIGNAL.borderColor,
-      pointBackgroundColor: DATASET_COLORS.SIGNAL.pointBackgroundColor,
-      pointBorderColor: DATASET_COLORS.SIGNAL.pointBorderColor,
-    });
-  }
-
-  // HIST Charts: Histogram
-  if (chartType === "HIST") {
-    // Histogram Dataset
-    datasets.push({
-      type: "bar",
-      label: DATASET_LABELS.HISTOGRAM,
-      data: chartData[`${assetKey}${period}Histogram`],
-      backgroundColor: DATASET_COLORS.HISTOGRAM.backgroundColor,
-      borderColor: DATASET_COLORS.HISTOGRAM.borderColor,
-      borderWidth: DATASET_COLORS.HISTOGRAM.borderWidth,
-      // Bar charts do not use point styles
-      pointStyle: false,
-    });
-  }
-
-  return datasets;
 }
 
 // DOM & Event Handling Functions
@@ -1020,11 +719,13 @@ function setupChartDownloader(button, containerIds, filenames) {
 
   button.addEventListener("click", () => {
     let currentIndex = 0;
+
     const downloadIntervalId = setInterval(() => {
       if (currentIndex >= containerIds.length) {
         clearInterval(downloadIntervalId);
         return;
       }
+
       const chartId = containerIds[currentIndex];
       const currentChart = document.getElementById(chartId);
 
@@ -1049,25 +750,22 @@ function setupChartDownloader(button, containerIds, filenames) {
  * Finds a DOM element by its ID and updates its text content with the
  * last value from a given array. It handles cases where the element
  * is not found or the data is invalid.
- * @param {string} elementId - The ID of the DOM element to update.
- * @param {number[]} dataArray - The array containing the latest value.
- * @param {number} decimalPlaces - The number of decimal places for formatting.
+ * @param {string} id - The ID of the element to update.
+ * @param {Array<number|null|undefined>} values - The array of data.
  */
-function updateDOMValue(elementId, dataArray, decimalPlaces = 2) {
-  const element = document.getElementById(elementId);
-  if (element && Array.isArray(dataArray) && dataArray.length > 0) {
-    const lastValue = dataArray[dataArray.length - 1];
-    if (typeof lastValue === "number" && !isNaN(lastValue)) {
-      element.textContent = lastValue.toFixed(decimalPlaces);
+function updateDOMWithValues(id, values) {
+  if (values && values.length > 0) {
+    const latestValue = values[values.length - 1];
+    const element = document.getElementById(id);
+    if (element) {
+      element.textContent = latestValue;
     } else {
-      element.textContent = "N/A";
+      console.warn(`Element with ID "${id}" was not found in the DOM.`);
     }
-  } else if (element) {
-    element.textContent = "N/A";
   }
 }
 
-// Current dates (these may need to be updated manually)
+// Charts Title
 const MONTHLY_CURRENT_DATE = "October 2025";
 const WEEKLY_CURRENT_DATE = "October 31, 2025";
 const DAILY_CURRENT_DATE = "October 31, 2025";
@@ -1367,7 +1065,7 @@ const CHART_TITLES = {
     `${MONTHLY_CURRENT_DATE}`,
   ],
   GTPLAT_MACD_Weekly: [
-    "Gold-to-Platinum Ratio, Medium-Term [Weekly Values] - MACD & Signal Line",
+    "Gold-to-Platinum Ratio,  Medium-Term [Weekly Values] - MACD & Signal Line",
     `${WEEKLY_CURRENT_DATE}`,
   ],
   GTPLAT_MACD_Daily: [
@@ -1568,14 +1266,115 @@ const CHART_TITLES = {
   ],
 };
 
+/**
+ * Generates the dataset array for a specific chart configuration.
+ * @param {string} assetName - The name of the asset (e.g., 'gold', 'gtsilv').
+ * @param {string} timeFrame - The time frame (e.g., 'Monthly', 'Weekly').
+ * @param {string} chartType - The type of chart (e.g., 'MVA', 'MACD').
+ * @returns {object[]} An array of dataset objects for the chart.
+ */
+function generateDatasets(assetName, timeFrame, chartType) {
+  const datasetMappings = DATA_MAP[chartType];
+  if (!datasetMappings) {
+    return [];
+  }
+
+  return datasetMappings.map((mapping) => {
+    const dataArrayName = `${assetName}${timeFrame}${mapping.suffix}`;
+    const dataArray =
+      mapping.suffix === "Value"
+        ? allValues[assetName][timeFrame]
+        : chartData[dataArrayName];
+
+    if (!dataArray) {
+      console.warn(`Data array not found: ${dataArrayName}`);
+      return createChartDataset({ label: mapping.label, data: [] });
+    }
+
+    return createChartDataset({
+      label: mapping.label,
+      data: dataArray.slice(CHART_DATA_START_INDEX, CHART_DATA_END_INDEX),
+    });
+  });
+}
+
+/**
+ * Generates the complete array of chart configurations.
+ * @returns {object[]}
+ */
+function generateChartConfigurations() {
+  const configs = [];
+  const assets = [
+    "gold",
+    "silver",
+    "platinum",
+    "palladium",
+    "djia",
+    "sp500",
+    "gtsilv",
+    "gtplat",
+    "gtpal",
+    "dtg",
+    "dts",
+    "sp500tg",
+    "sp500ts",
+  ];
+
+  assets.forEach((asset) => {
+    timePeriods.forEach((timeFrame) => {
+      CHART_TYPE_KEYS.forEach((chartType) => {
+        const assetTitleCase = ASSETS.find((a) => a.toLowerCase() === asset);
+        const elementId = `${assetTitleCase}_${chartType}_${timeFrame}`;
+
+        configs.push({
+          elementId: elementId,
+          labels: LABELS_MAP[timeFrame].slice(
+            CHART_DATA_START_INDEX,
+            CHART_DATA_END_INDEX
+          ),
+          text: CHART_TITLES[elementId],
+          datasets: generateDatasets(asset, timeFrame, chartType),
+        });
+      });
+    });
+  });
+
+  return configs;
+}
+
+function getChartTypeFromId(elementId) {
+  if (!elementId || typeof elementId !== "string") {
+    return "line"; // Default to 'line' if ID is invalid
+  }
+  const parts = elementId.split("_");
+  // The type is expected to be the second part (e.g., "Gold_MVA_Monthly")
+  return parts.length > 1 ? CHART_TYPE_MAP[parts[1]] || "line" : "line";
+}
+
+function getLegendStyle(elementId) {
+  if (!elementId || typeof elementId !== "string") {
+    return {};
+  }
+  const [asset, chartType] = elementId.split("_");
+
+  // Apply 'normal' font weight to all MACD charts
+  if (chartType === "MACD") {
+    return LEGEND_STYLES.NORMAL_WEIGHT;
+  }
+
+  // Apply 'normal' font weight and 'gray' color for HIST charts and MVA charts that are NOT for Gold.
+  if (chartType === "HIST" || (chartType === "MVA" && asset !== "Gold")) {
+    return LEGEND_STYLES.NORMAL_WEIGHT_GRAY;
+  }
+
+  // Return no override for Gold MVA charts and any other cases.
+  return {};
+}
+
 // Custom charts configuration
 const SCALES_OVERRIDES = {
   Gold_HIST_Monthly: {
-    scales: {
-      y: {
-        min: 10,
-      },
-    },
+    scales: { y: { min: 10 } },
   },
   Silver_MACD_Daily: {
     scales: {
@@ -1608,115 +1407,16 @@ const SCALES_OVERRIDES = {
     scales: {
       y: {
         ticks: {
-          callback: (value) => (value === 0 ? "0" : value.toFixed(2)),
+          callback: (value) => (value === 0 ? "0" : value.toFixed(1)),
         },
       },
     },
   },
-  Platinum_MACD_Monthly: {
+  GTSILV_MACD_Daily: {
     scales: {
       y: {
         ticks: {
-          callback: (value) => (value === 0 ? "0" : value.toFixed(0)),
-        },
-      },
-    },
-  },
-  Palladium_MACD_Monthly: {
-    scales: {
-      y: {
-        ticks: {
-          callback: (value) => (value === 0 ? "0" : value.toFixed(0)),
-        },
-      },
-    },
-  },
-  DJIA_MACD_Monthly: {
-    scales: {
-      y: {
-        ticks: {
-          callback: (value) => (value === 0 ? "0" : value.toFixed(0)),
-        },
-      },
-    },
-  },
-  SP500_MACD_Monthly: {
-    scales: {
-      y: {
-        ticks: {
-          callback: (value) => (value === 0 ? "0" : value.toFixed(0)),
-        },
-      },
-    },
-  },
-  SP500_MVA_Weekly: {
-    scales: {
-      y: {
-        ticks: {
-          callback: (value) => (value === 0 ? "0" : value.toFixed(0)),
-        },
-      },
-    },
-  },
-  SP500_MVA_Daily: {
-    scales: {
-      y: {
-        ticks: {
-          callback: (value) => (value === 0 ? "0" : value.toFixed(0)),
-        },
-      },
-    },
-  },
-  SP500_MACD_Weekly: {
-    scales: {
-      y: {
-        ticks: {
-          callback: (value) => (value === 0 ? "0" : value.toFixed(0)),
-        },
-      },
-    },
-  },
-  SP500_MACD_Daily: {
-    scales: {
-      y: {
-        ticks: {
-          callback: (value) => (value === 0 ? "0" : value.toFixed(0)),
-        },
-      },
-    },
-  },
-  GTSILV_MVA_Monthly: {
-    scales: {
-      y: {
-        ticks: {
-          callback: (value) => value.toFixed(0),
-        },
-      },
-    },
-  },
-  GTSILV_MVA_Weekly: {
-    scales: {
-      y: {
-        ticks: {
-          callback: (value) => value.toFixed(1),
-        },
-      },
-    },
-  },
-  GTSILV_MVA_Daily: {
-    scales: {
-      y: {
-        ticks: {
-          callback: (value) => value.toFixed(1),
-        },
-      },
-    },
-  },
-  GTSILV_MACD_Monthly: {
-    scales: {
-      y: {
-        ticks: {
-          callback: (value) => (value === 0 ? "0" : value.toFixed(0)),
+          callback: (value) => (value === 0 ? "0" : value.toFixed(1)),
         },
       },
     },
@@ -1725,7 +1425,34 @@ const SCALES_OVERRIDES = {
     scales: {
       y: {
         ticks: {
-          callback: (value) => (value === 0 ? "0" : value.toFixed(0)),
+          callback: (value) => (value === 0 ? "0" : value.toFixed(1)),
+        },
+      },
+    },
+  },
+  GTSILV_HIST_Weekly: {
+    scales: {
+      y: {
+        ticks: {
+          callback: (value) => (value === 0 ? "0" : value.toFixed(1)),
+        },
+      },
+    },
+  },
+  GTSILV_HIST_Daily: {
+    scales: {
+      y: {
+        ticks: {
+          callback: (value) => (value === 0 ? "0" : value.toFixed(1)),
+        },
+      },
+    },
+  },
+  GTPLAT_MVA_Monthly: {
+    scales: {
+      y: {
+        ticks: {
+          callback: (value) => (value === 0 ? "0" : value.toFixed(1)),
         },
       },
     },
@@ -1749,13 +1476,7 @@ const SCALES_OVERRIDES = {
     },
   },
   GTPLAT_MVA_Daily: {
-    scales: {
-      y: {
-        ticks: {
-          callback: (value) => value.toFixed(2),
-        },
-      },
-    },
+    scales: { y: { ticks: { callback: (value) => value.toFixed(2) } } },
   },
   GTPLAT_MACD_Monthly: {
     scales: {
@@ -1806,7 +1527,7 @@ const SCALES_OVERRIDES = {
     scales: {
       y: {
         ticks: {
-          callback: (value) => value.toFixed(2),
+          callback: (value) => (value === 0 ? "0" : value.toFixed(1)),
         },
       },
     },
@@ -1815,7 +1536,16 @@ const SCALES_OVERRIDES = {
     scales: {
       y: {
         ticks: {
-          callback: (value) => value.toFixed(2),
+          callback: (value) => (value === 0 ? "0" : value.toFixed(1)),
+        },
+      },
+    },
+  },
+  GTPAL_MVA_Daily: {
+    scales: {
+      y: {
+        ticks: {
+          callback: (value) => (value === 0 ? "0" : value.toFixed(2)),
         },
       },
     },
@@ -1833,7 +1563,7 @@ const SCALES_OVERRIDES = {
     scales: {
       y: {
         ticks: {
-          callback: (value) => (value === 0 ? "0" : value.toFixed(2)),
+          callback: (value) => (value === 0 ? "0" : value.toFixed(1)),
         },
       },
     },
@@ -1856,7 +1586,16 @@ const SCALES_OVERRIDES = {
       },
     },
   },
-  DTG_MVA_Monthly: {
+  GTPAL_HIST_Weekly: {
+    scales: {
+      y: {
+        ticks: {
+          callback: (value) => (value === 0 ? "0" : value.toFixed(2)),
+        },
+      },
+    },
+  },
+  GTPAL_HIST_Daily: {
     scales: {
       y: {
         ticks: {
@@ -1866,22 +1605,10 @@ const SCALES_OVERRIDES = {
     },
   },
   DTG_MVA_Weekly: {
-    scales: {
-      y: {
-        ticks: {
-          callback: (value) => value.toFixed(1),
-        },
-      },
-    },
+    scales: { y: { ticks: { callback: (value) => value.toFixed(1) } } },
   },
   DTG_MVA_Daily: {
-    scales: {
-      y: {
-        ticks: {
-          callback: (value) => value.toFixed(1),
-        },
-      },
-    },
+    scales: { y: { ticks: { callback: (value) => value.toFixed(1) } } },
   },
   DTG_MACD_Monthly: {
     scales: {
@@ -1955,11 +1682,32 @@ const SCALES_OVERRIDES = {
       },
     },
   },
+  SP500TG_MVA_Daily: {
+    scales: { y: { ticks: { callback: (value) => value.toFixed(2) } } },
+  },
   SP500TG_MACD_Monthly: {
     scales: {
       y: {
         ticks: {
           callback: (value) => (value === 0 ? "0" : value.toFixed(2)),
+        },
+      },
+    },
+  },
+  SP500TG_MACD_Weekly: {
+    scales: {
+      y: {
+        ticks: {
+          callback: (value) => (value === 0 ? "0" : value.toFixed(2)),
+        },
+      },
+    },
+  },
+  SP500TG_MACD_Daily: {
+    scales: {
+      y: {
+        ticks: {
+          callback: (value) => (value === 0 ? "0" : value.toFixed(3)),
         },
       },
     },
@@ -1977,73 +1725,25 @@ const SCALES_OVERRIDES = {
     scales: {
       y: {
         ticks: {
-          callback: (value) => (value === 0 ? "0" : value.toFixed(3)),
-        },
-      },
-    },
-  },
-  SP500TS_MVA_Monthly: {
-    scales: {
-      y: {
-        ticks: {
-          callback: (value) => value.toFixed(0),
-        },
-      },
-    },
-  },
-  SP500TS_MVA_Weekly: {
-    scales: {
-      y: {
-        ticks: {
-          callback: (value) => value.toFixed(1),
-        },
-      },
-    },
-  },
-  SP500TS_MVA_Daily: {
-    scales: {
-      y: {
-        ticks: {
-          callback: (value) => value.toFixed(2),
-        },
-      },
-    },
-  },
-  SP500TS_MACD_Monthly: {
-    scales: {
-      y: {
-        ticks: {
-          callback: (value) => (value === 0 ? "0" : value.toFixed(1)),
-        },
-      },
-    },
-  },
-  SP500TS_MACD_Weekly: {
-    scales: {
-      y: {
-        ticks: {
           callback: (value) => (value === 0 ? "0" : value.toFixed(2)),
         },
       },
     },
   },
-  SP500TS_HIST_Monthly: {
+  SP500TG_HIST_Daily: {
     scales: {
       y: {
         ticks: {
-          callback: (value) => value.toFixed(0),
+          callback: (value) => (value === 0 ? "0" : value.toFixed(3)),
         },
       },
     },
   },
+  SP500TS_HIST_Monthly: {
+    scales: { y: { ticks: { callback: (value) => value.toFixed(0) } } },
+  },
   SP500TS_HIST_Weekly: {
-    scales: {
-      y: {
-        ticks: {
-          callback: (value) => value.toFixed(0),
-        },
-      },
-    },
+    scales: { y: { ticks: { callback: (value) => value.toFixed(0) } } },
   },
   SP500TS_HIST_Daily: {
     scales: {
@@ -2057,12 +1757,29 @@ const SCALES_OVERRIDES = {
 };
 
 function getScalesOverride(elementId) {
-  // Check for the base ID if it's a small chart
-  const baseId = elementId.endsWith("_Small")
-    ? elementId.slice(0, -6)
-    : elementId;
-  return SCALES_OVERRIDES[baseId] || {};
+  return SCALES_OVERRIDES[elementId] || {};
 }
+
+const customCanvasBackgroundColor = {
+  id: "customCanvasBackgroundColor",
+  beforeDraw: (chart, args, options) => {
+    const { ctx } = chart;
+    ctx.save();
+
+    // Draw the border first
+    ctx.lineWidth = options.borderWidth || 10;
+    ctx.strokeStyle = options.borderColor || "#000000";
+    ctx.strokeRect(0, 0, chart.width, chart.height);
+
+    // Draw the background behind everything
+    ctx.globalCompositeOperation = "destination-over";
+
+    // Draw the background
+    ctx.fillStyle = options.color || "white";
+    ctx.fillRect(0, 0, chart.width, chart.height);
+    ctx.restore();
+  },
+};
 
 /**
  * Simple deep merge function to combine chart options.
@@ -2092,6 +1809,7 @@ function deepMerge(target, source) {
       }
     }
   }
+
   return output;
 }
 
@@ -2102,232 +1820,176 @@ function createChart({ elementId, type, labels, text, datasets, ...rest }) {
   if (!elementId) return;
 
   const canvas = document.getElementById(elementId);
+
   if (!canvas) {
-    console.error(`Canvas element not found for ID: ${elementId}`);
+    console.error(`Canvas element with id "${elementId}" not found.`);
     return;
   }
 
+  const chartType = type || getChartTypeFromId(elementId);
+  const legendStyle = getLegendStyle(elementId);
+  const scalesOverride = getScalesOverride(elementId);
+
   const ctx = canvas.getContext("2d");
 
-  // Chart.js requires the dataset configuration to be merged *before* initialization
-  const config = createChartConfig(elementId, datasets, labels);
+  function getChartOptions(canvasElement, text) {
+    // 1. Determine size based on the custom attribute
+    const size = canvasElement.getAttribute("data-chart-size") || "small";
 
-  new Chart(ctx, config);
-}
+    // 2. Define dynamic sizes
+    let baseFontSize, titleFontSize;
+    let lineThickness, pointSize;
 
-/**
- * Generates the complete Chart.js configuration object by merging defaults,
- * size overrides, and specific overrides. (MODIFIED)
- * @param {string} elementId - The ID of the chart canvas element.
- * @param {object[]} datasets - The dataset array for the chart.
- * @param {string[]} dateLabels - The date labels for the X-axis.
- * @returns {object} The complete Chart.js configuration object.
- */
-function createChartConfig(elementId, datasets, dateLabels) {
-  const type = getChartTypeFromId(elementId);
-  const scaleOverrides = getScalesOverride(elementId);
-  const legendOverrides = getLegendStyle(elementId);
+    if (size === "large") {
+      // --- LARGE CHART SETTINGS ---
+      baseFontSize = 14;
+      titleFontSize = 18;
+      lineThickness = 3; // Thicker Line
+      pointSize = 5; // Bigger Dots
+    } else {
+      // --- SMALL CHART SETTINGS ---
+      baseFontSize = 6;
+      titleFontSize = 8;
+      lineThickness = 1.5; // Thinner Line
+      pointSize = 2.5; // Smaller Dots
+    }
 
-  // 1. Get size-specific chart options (NEW)
-  const sizeOverrides = getChartSizeOptions(elementId);
+    // 3. Define and return the options object dynamically
+    const options = {
+      elements: {
+        line: {
+          tension: 0.4,
+          borderWidth: lineThickness, // <-- Dynamic Line Thickness
+        },
+        point: {
+          radius: pointSize, // <-- Dynamic Dot Size
+          hitRadius: pointSize + 2, // Larger hit area for easier clicking on dots
+        },
+      },
+      plugins: {
+        legend: {
+          display: true,
+          position: "top",
+          labels: {
+            color: "black",
+            font: {
+              weight: "bold",
+              size: baseFontSize, // Dynamic Font Size
+            },
+          },
+        },
+        title: {
+          display: true,
+          text: text,
+          color: "black",
+          font: {
+            size: titleFontSize, // Dynamic Font Size
+            family: "Arial",
+          },
+        },
+        customCanvasBackgroundColor: {
+          color: "white",
+          borderColor: "#000000",
+          borderWidth: 10,
+        },
+      },
+      scales: {
+        x: {
+          ticks: {
+            autoSkip: false,
+            maxRotation: 90,
+            minRotation: 90,
+            color: "black",
+            font: {
+              size: baseFontSize, // Dynamic Font Size
+              weight: "bold",
+            },
+          },
+        },
+        y: {
+          ticks: {
+            color: "black",
+            font: {
+              size: baseFontSize, // Dynamic Font Size
+              weight: "bold",
+            },
+            // Y-Axis formatting logic (remains the same)
+            callback: function (value) {
+              if (
+                Math.abs(value) > 10000000 ||
+                (Math.abs(value) > 0 && Math.abs(value) < 0.001)
+              ) {
+                return value.toExponential(1);
+              }
 
-  // 2. Get chart title. If the chart ID is the small one, remove the '_Small' suffix
-  // to find the correct title in the CHART_TITLES map.
-  const chartTitleKey = elementId.endsWith("_Small")
-    ? elementId.slice(0, -6)
-    : elementId;
-  const chartTitle = CHART_TITLES[chartTitleKey];
+              if (Math.abs(value - Math.round(value)) < 0.001) {
+                return Math.round(value);
+              }
 
-  // 3. Merge all configuration pieces: Default -> Size Override -> Scale Override
-  // The size override must come after the default to apply smaller fonts.
-  let config = deepMerge(DEFAULT_CHART_OPTIONS, sizeOverrides);
-  config = deepMerge(config, scaleOverrides);
+              const cleanValue = Number(value.toPrecision(15));
+              const stringValue = String(cleanValue);
 
-  //   function getChartOptions(canvasElement, text) {
-  // 1. Determine size based on the custom attribute
-  const size = canvasElement.getAttribute("data-chart-size") || "small";
+              if (
+                stringValue.includes(".") &&
+                stringValue.split(".")[1].length > 2
+              ) {
+                return cleanValue.toFixed(2);
+              }
 
-  // 2. Define dynamic sizes
-  let baseFontSize, titleFontSize;
-  let lineThickness, pointSize;
-
-  if (size === "large") {
-    // --- LARGE CHART SETTINGS ---
-    baseFontSize = 14;
-    titleFontSize = 18;
-    lineThickness = 3; // Thicker Line
-    pointSize = 5; // Bigger Dots
-  } else {
-    // --- SMALL CHART SETTINGS ---
-    baseFontSize = 6;
-    titleFontSize = 8;
-    lineThickness = 1.5; // Thinner Line
-    pointSize = 2.5; // Smaller Dots
+              return cleanValue;
+            },
+          },
+        },
+      },
+      layout: {
+        padding: {
+          left: 30,
+          right: 30,
+          top: 30,
+          bottom: 30,
+        },
+      },
+    };
+    return options;
   }
 
-  // 3. Define and return the options object dynamically
-  const options = {
-    elements: {
-      line: {
-        tension: 0.4,
-        borderWidth: lineThickness, // <-- Dynamic Line Thickness
-      },
-      point: {
-        radius: pointSize, // <-- Dynamic Dot Size
-        hitRadius: pointSize + 2, // Larger hit area for easier clicking on dots
-      },
-    },
-    plugins: {
-      legend: {
-        display: true,
-        position: "top",
-        labels: {
-          color: "black",
-          font: {
-            weight: "bold",
-            size: baseFontSize, // Dynamic Font Size
-          },
-        },
-      },
-      title: {
-        display: true,
-        text: text,
-        color: "black",
-        font: {
-          size: titleFontSize, // Dynamic Font Size
-          family: "Arial",
-        },
-      },
-      customCanvasBackgroundColor: {
-        color: "white",
-        borderColor: "#000000",
-        borderWidth: 10,
-      },
-    },
-    scales: {
-      x: {
-        ticks: {
-          autoSkip: false,
-          maxRotation: 90,
-          minRotation: 90,
-          color: "black",
-          font: {
-            size: baseFontSize, // Dynamic Font Size
-            weight: "bold",
-          },
-        },
-      },
-      y: {
-        ticks: {
-          color: "black",
-          font: {
-            size: baseFontSize, // Dynamic Font Size
-            weight: "bold",
-          },
-          // Y-Axis formatting logic (remains the same)
-          callback: function (value) {
-            if (
-              Math.abs(value) > 10000000 ||
-              (Math.abs(value) > 0 && Math.abs(value) < 0.001)
-            ) {
-              return value.toExponential(1);
-            }
+  // Combine the default options with our automatic style overrides.
+  const optionsWithLegend = deepMerge(defaultOptions, legendStyle);
+  const generatedOptions = deepMerge(optionsWithLegend, scalesOverride);
 
-            if (Math.abs(value - Math.round(value)) < 0.001) {
-              return Math.round(value);
-            }
+  // Merge the user-provided overrides with `rest`. This ensures they have the highest priority.
+  const finalOptions = deepMerge(generatedOptions, rest);
 
-            const cleanValue = Number(value.toPrecision(15));
-            const stringValue = String(cleanValue);
-
-            if (
-              stringValue.includes(".") &&
-              stringValue.split(".")[1].length > 2
-            ) {
-              return cleanValue.toFixed(2);
-            }
-
-            return cleanValue;
-          },
-        },
-      },
+  new Chart(ctx, {
+    type: chartType,
+    data: {
+      labels: labels,
+      datasets: datasets,
     },
-    layout: {
-      padding: {
-        left: 30,
-        right: 30,
-        top: 30,
-        bottom: 30,
-      },
-    },
+    options: finalOptions,
+    plugins: [customCanvasBackgroundColor], // Register the plugin
+  });
+}
+
+function createChartDataset({ label, data, ...rest }) {
+  const defaultColors = DATASET_COLORS[label] || {};
+  const defaultBorderWidth = label === DATASET_LABELS.HISTOGRAM ? 0 : 6;
+
+  return {
+    label: label,
+    data: data,
+    borderWidth: defaultBorderWidth,
+    fill: false,
+    ...defaultColors,
+    ...rest,
   };
-  return options;
-}
-
-return deepMerge(config, {
-  type: type,
-  data: {
-    labels: dateLabels,
-    datasets: datasets,
-  },
-  options: {
-    plugins: {
-      title: {
-        // Use the retrieved title
-        text: chartTitle,
-      },
-      legend: {
-        // Merge legend overrides to ensure font size is kept from sizeOverrides
-        labels: deepMerge(
-          config.options.plugins.legend.labels,
-          legendOverrides
-        ),
-      },
-    },
-  },
-  // The customCanvasBackgroundColor is already in the merged config via DEFAULT_CHART_OPTIONS
-  // We explicitly merge it here to ensure it's at the end of the plugins array if needed,
-  // but the deepMerge on the 'config' object already handles the plugin array correctly
-});
-
-function getChartTypeFromId(elementId) {
-  if (!elementId || typeof elementId !== "string") {
-    return "line"; // Default to 'line' if ID is invalid
-  }
-
-  const parts = elementId.split("_");
-  // The type is expected to be the second part (e.g., "Gold_MVA_Monthly")
-  return parts.length > 1 ? CHART_TYPE_MAP[parts[1]] || "line" : "line";
-}
-
-function getLegendStyle(elementId) {
-  if (!elementId || typeof elementId !== "string") {
-    return {};
-  }
-
-  // Use the base ID for style lookups
-  const baseId = elementId.endsWith("_Small")
-    ? elementId.slice(0, -6)
-    : elementId;
-  const [asset, chartType] = baseId.split("_");
-
-  // Apply 'normal' font weight to all MACD charts
-  if (chartType === "MACD") {
-    return LEGEND_STYLES.NORMAL_WEIGHT;
-  }
-  // Apply 'normal' font weight and 'gray' color for HIST charts and MVA charts that are NOT for Gold.
-  if (chartType === "HIST" || (chartType === "MVA" && asset !== "Gold")) {
-    return LEGEND_STYLES.NORMAL_WEIGHT_GRAY;
-  }
-  // Return no override for Gold MVA charts and any other cases.
-  return {};
 }
 
 // =========================================================================
-// Main Execution Logic
+// MAIN EXECUTION
 // =========================================================================
 
-// Calculate Ratios first
+// Create a single source of truth for all value arrays, including calculated ratios.
 const allValues = { ...sourceDataMap };
 ratioDefinitions.forEach((ratio) => {
   allValues[ratio.name] = {};
@@ -2372,98 +2034,9 @@ ratioDefinitions.forEach((ratio) => {
   });
 });
 
-// Perform the DOM updates for all specified values
-valuesToUpdate.forEach(({ id, data }) => {
-  // Use 0 decimal places for DJIA and S&P500, 2 for the rest
-  const decimalPlaces = id.startsWith("djia") || id.startsWith("sp500") ? 0 : 2;
-  updateDOMValue(id, data, decimalPlaces);
-});
-
-// Generate all configurations
-const allChartConfigs = [];
-timePeriods.forEach((timeFrame) => {
-  const labels = sourceData[`${timeFrame.toLowerCase()}Dates`].slice(
-    CHART_DATA_START_INDEX,
-    CHART_DATA_END_INDEX + 1
-  );
-
-  ASSETS.forEach((asset) => {
-    CHART_TYPE_KEYS.forEach((chartType) => {
-      const elementId = `${asset}_${chartType}_${timeFrame}`;
-      const datasets = generateDatasets(asset, timeFrame, chartType);
-
-      allChartConfigs.push({
-        elementId,
-        type: CHART_TYPE_MAP[chartType],
-        labels,
-        datasets,
-      });
-    });
-  });
-});
-
-// Find the download button
-const btnDisplay = document.getElementById("btnDisplay");
-
-// Execute the main function on DOMContentLoaded to ensure all chart canvases exist
-document.addEventListener("DOMContentLoaded", () => {
-  // Generate a list of all possible chart IDs
-  const allArtifactsMonthly = generateChartArtefacts("Monthly");
-  const allArtifactsWeekly = generateChartArtefacts("Weekly");
-  const allArtifactsDaily = generateChartArtefacts("Daily");
-  const allContainers = [
-    ...allArtifactsMonthly.containers,
-    ...allArtifactsWeekly.containers,
-    ...allArtifactsDaily.containers,
-  ];
-  const allFiles = [
-    ...allArtifactsMonthly.files,
-    ...allArtifactsWeekly.files,
-    ...allArtifactsDaily.files,
-  ];
-
-  // If the download button exists, attach the download functionality
-  if (btnDisplay) {
-    btnDisplay.style.display = "block"; // Make button visible
-    setupChartDownloader(btnDisplay, allContainers, allFiles);
-  }
-
-  // Find all canvas elements in the DOM and create charts for them
-  const canvasElements = document.querySelectorAll("canvas");
-
-  canvasElements.forEach((canvas) => {
-    const elementId = canvas.id;
-    // Find a matching config for this canvas element.
-    // NOTE: This logic now automatically handles the new 'Gold_MVA_Monthly_Small' ID,
-    // as it finds the original config ('Gold_MVA_Monthly') using the chartTitleKey trick in createChartConfig.
-    const baseId = elementId.endsWith("_Small")
-      ? elementId.slice(0, -6)
-      : elementId;
-    const chartConfig = allChartConfigs.find((c) => c.elementId === baseId);
-
-    if (chartConfig) {
-      // Create the chart using the found configuration
-      // The createChartConfig function will apply size overrides if elementId ends with '_Small'
-      createChart({ ...chartConfig, elementId });
-    } else {
-      // Check if it's a small chart that needs its base config
-      if (elementId.endsWith("_Small")) {
-        const originalId = elementId.slice(0, -6);
-        const originalConfig = allChartConfigs.find(
-          (c) => c.elementId === originalId
-        );
-        if (originalConfig) {
-          createChart({ ...originalConfig, elementId });
-        } else {
-          console.warn(
-            `No configuration found for chart ID: ${elementId} (or its base ID: ${originalId})`
-          );
-        }
-      } else {
-        console.warn(`No configuration found for chart ID: ${elementId}`);
-      }
-    }
-  });
+// Perform the DOM updates for all specified values.
+valuesToUpdate.forEach((item) => {
+  updateDOMWithValues(item.id, item.data);
 });
 
 // Chart Rendering
