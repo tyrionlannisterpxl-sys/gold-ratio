@@ -1,14 +1,4 @@
 // chart-loader.js
-// This dynamically loads main charts.js file and forces browsers to fetch the newest version.
-
-// (function loadChartsScript() {
-//   const script = document.createElement('script');
-//   script.src = 'https://cdn.jsdelivr.net/gh/tyrionlannisterpxl-sys/gold-ratio/charts.js?v=' + Date.now();
-//   script.async = true; // load asynchronously so it doesn’t block the page
-//   document.head.appendChild(script);
-// })();
-
-// chart-loader.js
 // Dynamically load charts.js and display current month + last values
 
 (function loadChartsScript() {
@@ -40,8 +30,6 @@
       }
     }
 
-    // You can also initialize your charts here if needed
-    // Example: call a function like initCharts() that uses sourceData
   };
 
   document.head.appendChild(script);
